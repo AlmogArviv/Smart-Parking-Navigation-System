@@ -2,16 +2,18 @@
 
 ## Introduction
 This project is a POC for a smart parking navigation system targeted at closed, primarily underground, parking lots where visibility is limited, orientation is challenging and parking spaces are scarce.
-We aim to enhance the ability to navigate through a closed off, GSP disabled parking lot environments by using an array of cameras to create a system that maps a driver’s position by using AI and ML to capture license plate numbers and send new locations updates through azure services, directly to a web application in the user’s smartphone.
+We aim to enhance the ability to navigate through a closed off, GSP disabled parking lot environments by using an array of cameras to create a system that maps a driver’s position by using AI and ML to capture license plate numbers and send new locations updates through Azure services, directly to a web application in the user’s smartphone.
 
 ## System Overview
 The smart parking system consists of these key components:
-IOT Module
+
+### IOT Module
 Camera sensors positioned strategically within the parking lot to capture license plate information and monitor vehicle location.
 Entrance camera at front gates, Exit cameras at Exit points and optional entry and exit point locations for update cameras throughout the parking lot sections.
 WiFi and a unique QR code is rendered at the front gates for every vehicle.
 Occupancy, azure database communication and updates are sent by the device.
-Azure Web Application
+
+### Azure Web Application
 Pre rendered customized map of the parking lot on the navigation screen.
 Menu actions for automatic and custom navigation, updates and information, save location options.
 Auxiliary apps options for outdoor vehicle navigation, payment solutions.
