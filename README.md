@@ -45,10 +45,10 @@ The IOT device runs a Python program which initiates the cameras and runs in par
 
 ## Azure
 Azure services that were used in the project for communication, storage and web application deployment are:
-Web app: web application deployment.
-Functions: interaction between the Web app, IOT devices and the user.
-Storage: web application sources, database.
-SignalR: broadcast update messages.
+  **Web app**: web application deployment.
+  **Functions**: interaction between the Web app, IOT devices and the user.
+  **Storage**: web application sources, database.
+  **SignalR**: broadcast update messages.
 
 ## Azure Web Application
 Map: 
