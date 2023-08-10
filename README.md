@@ -61,18 +61,18 @@ Azure services that were used in the project for communication, storage and web 
 * **Auxiliary navigation and payment applications options**: Google Maps, Waze, Pango.
 
 ## Azure Functions
-*Insert - inserts a new unique entity of a vehicle number to the Azure occupancy table.
-*Remove - removes the entity of the vehicle from the tables.
-*Update - updates the Azure table and sends a SignalR location update to the user’s URL.
-*Query Occupancy - queries the Azure table for occupancy data by section and sends a SignalR message with the update for all users.
+* **Insert** - inserts a new unique entity of a vehicle number to the Azure occupancy table.
+* **Remove** - removes the entity of the vehicle from the tables.
+* **Update** - updates the Azure table and sends a SignalR location update to the user’s URL.
+* **Query Occupancy** - queries the Azure table for occupancy data by section and sends a SignalR message with the update for all users.
 
 ## Improvements / Bugs / WIP
-IOT Device cameras algorithm improvements:
+* **IOT Device cameras algorithm improvements**:
 Continuous scanning on all cameras, front gate interval times optimization.
-Navigation:
+* **Navigation**:
 Directions for the navigation on the map proved to be difficult to integrate using Leaflet, for future iterations a different plugin should be considered.
-Admin user page:
+* **Admin user page**:
 Monitor tables data and IOT. Using the information from Azure hub proved to be sufficient for admin information, a standalone web application is possible but might be redundant.
-Function triggers:
+* **Function triggers**:
 While the groundwork for IOT devices is present in the project, Http triggers were used throughout the project to control communication between the IOT device and the web application. 
 Using Azure IOT Hub and devices, while controlling the functionality through IOT triggers proved to be difficult using a virtual machine to simulate the usage of a Raspberry Pi 4. 
