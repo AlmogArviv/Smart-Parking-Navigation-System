@@ -45,26 +45,26 @@ The IOT device runs a Python program which initiates the cameras and runs in par
 
 ## Azure
 Azure services that were used in the project for communication, storage and web application deployment are:
-  **Web app**: web application deployment.
-  **Functions**: interaction between the Web app, IOT devices and the user.
-  **Storage**: web application sources, database.
-  **SignalR**: broadcast update messages.
+  * **Web app**: web application deployment.
+  * **Functions**: interaction between the Web app, IOT devices and the user.
+  * **Storage**: web application sources, database.
+  * **SignalR**: broadcast update messages.
 
 ## Azure Web Application
-Map: 
-we chose to use Leaflet, an open source interactive map Javascript library for our map functionality.
-Menu:
-Find a space: use occupancy data to navigate to most likely section to find a parking space. Alternatively, user can request specific location for navigation.
-Navigate to exit: navigate to closest exit point.
-Save location: option to input your parking spot location that will be saved on the device browser's cookies.
-Change vehicle number: user ability to manually correct false number detection. it is possible to change the vehicle number on the app so that other update cameras will still send updates to the user map.
-Auxiliary navigation and payment applications options: Google Maps, Waze, Pango.
+### Map
+* We chose to use Leaflet, an open source interactive map Javascript library for our map functionality.
+### Menu
+* **Find a space**: use occupancy data to navigate to most likely section to find a parking space. Alternatively, user can request specific location for navigation.
+* **Navigate to exit**: navigate to closest exit point.
+* **Save location**: option to input your parking spot location that will be saved on the device browser's cookies.
+* **Change vehicle number**: user ability to manually correct false number detection. it is possible to change the vehicle number on the app so that other update cameras will still send updates to the user map.
+* **Auxiliary navigation and payment applications options**: Google Maps, Waze, Pango.
 
 ## Azure Functions
-Insert - inserts a new unique entity of a vehicle number to the Azure occupancy table.
-Remove - removes the entity of the vehicle from the tables.
-Update - updates the Azure table and sends a SignalR location update to the user’s URL.
-Query Occupancy - queries the Azure table for occupancy data by section and sends a SignalR message with the update for all users.
+*Insert - inserts a new unique entity of a vehicle number to the Azure occupancy table.
+*Remove - removes the entity of the vehicle from the tables.
+*Update - updates the Azure table and sends a SignalR location update to the user’s URL.
+*Query Occupancy - queries the Azure table for occupancy data by section and sends a SignalR message with the update for all users.
 
 ## Improvements / Bugs / WIP
 IOT Device cameras algorithm improvements:
