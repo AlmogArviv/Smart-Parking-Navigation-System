@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+
+        <!-- Leaflet CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+        <title>Smart Parking Navigation System</title>
+          
+        <style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: Arial, sans-serif;
+			background-color: #f2f2f2;
+		}
+
+		header {
+			position: relative;
+			background-color: #333;
+			color: #fff;
+			padding: 16px;
+			text-align: center;
+			border: 4px solid #5c5a5a;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		}
+
+		h1 {
+			margin: 0;
+			font-size: 48px;
+		}
+
+            
+		#map {
+			position: relative;
+			top: 1vw;
+			left: 1%;
+			z-index: 100;
+			width: 98vw;
+			max-width: 98%;
+			height: calc(16/10 * 93vw);
+			max-height: 80%;
+		}
+
+		.text-box {
+			position: relative;
+			top: 0.5vw;
+			margin: 5px;
+			z-index: 90;
+			background-color: white;
+			text-align: center;
+			flex-wrap: wrap;
+			font-weight: bold;
+			text-align: center;
+			white-space: normal;
+			line-height: 1.4;
+			font-size: 45px;
+			border-radius: 8px;
+			border: 4px solid #5c5a5a;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		}
+
+
+		/* #############   Zoom Controls And Occupancy Monitor   ############## */
+		/* zoom control */
+		.custom-control {
+			position: relative;
+			left: 0%;
+			z-index: 700;
+		}
+
+		.custom-control button {
+			display: block;
+			width: 80px;
+			height: 80px;
+			margin: 5px;
+			background-color: #f8f8f8;
+			border-radius: 8px;
+			border: 5px solid #5c5a5a;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			cursor: pointer;
+		}
+
+		.custom-control button:hover {
+			background-color: #e0e0e0;
+		}
+
+		/* occupancy monitor */
+		.occupancy-box {
+			position:absolute;
+			display: block;
+			flex-direction: row;
+            top: 0%;
+			right: 0%;
+			z-index: 700;
+			background-color: transparent;
+		}
+
+		.floor {
+			text-align: center;
+			justify-content: center;
+			align-items: center;
+			display: block;
+			width: 190px;
+			height: 70px;
+			margin: 5px;
+			padding: 5px;
+			font-size: 30px;
+			line-height: 1;
+			background-color: #f8f8f8;
+			border-radius: 8px;
+			border: 3px solid #5c5a5a;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		}
+
+		.floor h4 {
+			margin: 0;
+		}
+
+		.floor p {
+			margin: 5px 0;
+		}
+		/* ############################################################## */
+
+		/* ####################   Action Buttons   ###################### */
+		.menu-container {
+			position: relative;
+            margin-top: 1%;
+            padding: 1%;
+			width: 98%;
+			background-color: #8be0ef;
+			transition: background-color 0.3s ease;
+			border-radius: 8px;
+			border: 4px solid #5c5a5a;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			z-index: 999;
+		}
+
+		.menu-toggle {
+			position: fixed;
+			bottom: 1%;
+			right: 2%;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-around;
+			align-items: center;
+			width: 120px;
+			height: 120px;
+			font-size: 80px;
+			font-weight: bold;			
+			background-color: #d8d8d8;	
+			border-radius: 5px;
+			border: 10px solid #5c5a5a;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			cursor: pointer;
+			z-index: 1100;
+		}
+
+		.menu-toggle span {
+			display: block;
+			width: 100%;
+			height: 4px;
+			background-color: #000000;
+		}
+
+		.menu-toggle:hover span {
+			background-color: #3e3e3e;
+		}
+
+		.menu-list {
+			list-style-type: none;
+			padding: 0;
+			margin: 0;
+			display: none;
+			flex-wrap: wrap;
+			justify-content: center;
+			max-width: 98%;
+		}
+
+		.menu-list.open {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+		}
+
+		.menu-list li {
+			padding: 10px;
+		}
+
+		.menu-list li a {
+			text-decoration: none;
+			color: #333;
+		}
+
+		.menu-list li a:hover {
+			color: #666;
+		}
+
+		.action-button, .button {
+			display: flex;
+			background-color: #333;
+			color: #fff;
+			transition: background-color 0.3s ease;
+			width: 250px;
+			height: 130px;
+			margin: 5px;
+			justify-content: center;
+			align-items: center;
+			font-weight: bold;
+			cursor: pointer;
+			text-align: center;
+			white-space: normal;
+			line-height: 1.2;
+			font-size: 30px;
+			transition: background-color 0.3s ease;
+			border-radius: 8px;
+			border: 4px solid #5c5a5a;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		}
+
+		.action-button:hover, .button:hover {
+			background-color: #555;
+		}
+
+		/* Popup Events Choices */
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 9999;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			overflow: auto;
+			background-color: rgba(0, 0, 0, 0.6);
+		}
+
+		.modal-content {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			background-color: #fff;
+			margin: 20% auto;
+			padding: 20px;
+			border-radius: 8px;
+			font-size: 24px;
+			max-width: 80%;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		}
+
+		.modal p {
+			margin: 0 0 10px;
+		}
+
+		.modal button {
+			margin: 10px;
+			padding: 8px 16px;
+			background-color: #333;
+			color: #fff;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 20px;
+			transition: background-color 0.3s ease;
+		}
+
+		.modal button:hover {
+			background-color: #555;
+		}
+        
+		/* ###################################################################### CSS END ######################################################## */
+        </style>
+    </head> 
+
+    <body>
+        <!-- header -->
+        <div>
+            <header>
+                <!-- App Title -->
+                <h1>Smart Parking Navigation System</h1>
+
+                <!-- JQuery -->
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            </header>
+        </div>
+        
+        <!-- map -->
+        <div id="mapContainer">
+            <!-- Leaflet JS -->
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+                crossorigin="">
+            </script>
+            <div id="map">
+                <!-- zoom controls -->
+                <div class="custom-control">
+                    <button onclick="switchFloor('next')" style="font-size: 50px">+</button>
+                    <button onclick="switchFloor('prev')" style="font-size: 50px">-</button>
+                </div>
+
+                <!-- occupancy monitor -->
+                <div class="occupancy-box">
+                    <div class="floor">
+                        <h4>Floor 0</h4>
+                        <p id="occupancyFloor0">Occupancy: 0</p>
+                    </div>
+                    <div class="floor">
+                        <h4>Floor 1</h4>
+                        <p id="occupancyFloor1">Occupancy: 0</p>
+                    </div>
+                    <div class="floor">
+                        <h4>Floor 2</h4>
+                        <p id="occupancyFloor2">Occupancy: 0</p>
+                    </div>
+                </div>
+            </div>            
+        </div>
+
+        <!-- Actions buttons -->
+        <div id="menuContainer" class="menu-container">
+            <button id="menuToggle" class="menu-toggle">&#9776;</button>
+            <ul id="menuList" class="menu-list">
+                <li><div class="action-button" id="button1" onclick="findSpace()" >Find Parking Space</div></li>
+                <li><div class="action-button" id="button2" onclick="navigateExit()">Navigate To Exit</div></li>
+                <li><div class="action-button" id="button3" onclick="saveSpot()">Save Parking Spot</div></li>
+                <li><div class="action-button" id="button4" onclick="openGoogleMaps()">Google Maps</div></li>
+                <li><div class="action-button" id="button5" onclick="openWaze()">Waze</div></li>
+                <li><div class="action-button" id="button5" onclick="openPango()">Pango</div></li>
+                <li><div class="action-button" id="button7" onclick="ChangePlate()" style="background-color: rgb(231, 147, 50)";>Change Number Plates</div></li>
+            </ul>
+            
+            <!-- navigation automatic choises  -->
+            <div id="navigationModal" class="modal">
+                <div class="modal-content">
+                    <p>Find closest low occupancy section? <br> Choose an option:</p>
+                    <button class="button" id="navYes">Yes</button>
+                    <button class="button" id="navNo">No</button>
+                </div>
+            </div>
+
+            <!-- change plate number  -->
+            <div id="changePlateModal" class="modal">
+                <div class="modal-content">
+                    <p>Please change the number plate only if the wrong number was assigned to you. <br> Are you sure you want to change number plate?</p>
+                    <button class="button" id="changePlateYes">Yes</button>
+                    <button class="button" id="changePlateNo">No</button>
+                </div>
+            </div>
+            <!-- error message for invalid number plate entry  -->
+            <div id="InvalidPlateModal" class="modal">
+                <div class="modal-content">
+                    <p>Invalid number plate. <br> Please try again</p>
+                    <button class="button" id="InvalidPlateOk">Ok</button>
+                </div>
+            </div>
+            <!-- error message for invalid destination entry  -->
+            <div id="InvalidDestination" class="modal">
+                <div class="modal-content">
+                    <p>Invalid destination. <br> Please try again</p>
+                    <button class="button" id="InvalidDestinationOk">Ok</button>
+                </div>
+            </div>
+
+            <!-- welcome text -->
+            <div class="text-box" style= "font-size: 35px;" id="welcomeText">welcome</div>
+            
+            <!-- about button -->
+            <div id="aboutButton">
+                <button onclick="openAbout()" style="
+                    position: fixed;
+                    left: 2%;
+                    bottom: 1%;
+                    width: 120px;
+                    height: 60px;
+                    margin: 10px;
+                    z-index: 1100;
+                    background-color: #c1c1c1;
+                    font-size: 30px;
+                    font-weight: bold;
+                    transition: background-color 0.3s ease;
+                    border-radius: 8px;
+                    border: 4px solid #5c5a5a;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);"            >About</button>
+                <div id="aboutButtonModal" class="modal">
+                    <div class="modal-content">
+                        <p>This is an IOT project created by students at Tel-Aviv University.</p>
+                        <button class="button" id="aboutBack">Back</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Not Implemented Message  -->
+            <div id="notImplementedModal" class="modal">
+                <div class="modal-content">
+                    <p>Not Implemented Yet</p>
+                    <button class="button" id="OKbutton">OK</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ################################### Microsoft Azure ########################################## -->
+        
+        <!-- references a CDN-hosted copy of the client library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.7/signalr.js"></script>     
+        
+        <!-- handling Azure SingnalR service messages -->
+        <script>
+            var apiBaseUrl = window.location.origin;
+            var HubConnection = "https://spnsfunctions.azurewebsites.net/api"; // SignalR: "https://spnssr.service.signalr.net/client/?hub=ParkingChat";
+            
+            // Create connection
+            try {
+                var connection = new signalR.HubConnectionBuilder()
+                    .withUrl(HubConnection)
+                    .configureLogging(signalR.LogLevel.Information)
+                    .build();
+                
+                // Driver Location Update
+                connection.on('UpdateMap', (message) => {
+                    try {
+                        var carPosition = message;
+                        moveCar(carPosition);
+                        manualSwitchFloor(driverLocation[0]);
+                        // TODO: update floor showing according to update
+                    } catch (error) {
+                        console.error(`Unable to parse ${message}`);
+                    }
+                });
+                
+                // Occupancy data update
+                connection.on('UpdateOccupancy', (message) => {
+                    try {
+                        console.log(`received occupancy info: `, message);
+                        // Update the OccupancyMap
+                        for (const floorData of message) {
+                                OccupancyMap.set(floorData.Floor.toString(), floorData.Count);
+                            }
+                        updateOccupancyData();
+                    } catch (error) {
+                        console.error(`There was an error parsing the occupancy data from azure", error`);
+                    }
+                });
+
+                connection.start()
+                    .catch(console.error);
+            } catch (error) {
+                console.error(`Unable to connect to Azure SignalR ${error}`);
+            }
+        </script>
+
+        <!-- ########################################################################## Javascript ########################################################################################### -->
+        
+        <script>
+            // floor zoom properties
+            var minZoomLevel = 0;
+            var maxZoomLevel = 2;
+            var initialZoomLevel = 0;
+            
+            // Image properties
+            var imageWidth = 1080 * 0.88;
+            var imageHeight = 1619 * 0.89;
+            var maxMovementX = imageWidth * 0.25;
+            var maxMovementY = imageHeight * 0.25;
+            
+            // number plate
+            var numberPlate = '00000000';
+            var licensePlateButton = document.getElementById('button7');
+            var existingText = licensePlateButton.textContent;
+            licensePlateButton.innerHTML = existingText + ' <br> ' + numberPlate;
+
+            // driver location
+            // Bug: should be extracted from camera and changed on update AND initialization
+            var driverLocation = [0, "F0_IN"]; // Entry point - car marker location + floor.
+
+            // parking lot occupancy sections - in this project its floors 0,1,2
+            var sectionOccupancyMap = [
+                ["0", 0], 
+                ["1", 0], 
+                ["2", 0]
+            ];
+            var OccupancyMap = new Map(sectionOccupancyMap);
+            
+            /* Initialization:
+                1. update welcome text
+                2. update occupancy monitor every 30 seconds or so 
+            */
+            document.addEventListener("DOMContentLoaded", function() {
+                updateWelcomeText();
+                updateOccupancyData();
+            });
+
+            var imageResourceFolder = 'https://spnsstorage.blob.core.windows.net/spnswebappfiles/Tiles/';
+
+            var floorMap = [
+                L.imageOverlay(imageResourceFolder + 'Levels/Level_00/Parking_Map_2_1080.png', [[0,0], [imageHeight, imageWidth]]),
+                L.imageOverlay(imageResourceFolder + 'Levels/Level_01/Parking_Map_2_f1_1080.png', [[0, 0], [imageHeight, imageWidth]]),
+                L.imageOverlay(imageResourceFolder + 'Levels/Level_02/Parking_Map_2_f2_1080.png', [[0, 0], [imageHeight, imageWidth]])
+                // Add more floor images as needed
+            ];
+
+            // for every floor and every section there should be a key for in and out
+            // optional add parking spaces sections in addition to the entries and exits. like in the comented example
+            var cameraPositionData = [
+                ['F0_IN', [0, [140, 130]]],
+                //['F0_AIN', [0, [150, 1300]]],
+                //['F0_AOUT', [0, [150, 1300]]],
+                //['F0_BIN', [0, [150, 1300]]],
+                //['F0_BOUT', [0, [150, 1300]]],
+                ['F0_OUT', [0, [360, 820]]],
+                ['F1_IN', [1, [140, 130]]],
+                //['F1_AIN', [1, [150, 1300]]],
+                //['F1_AOUT', [1, [150, 1300]]],
+                //['F1_BIN', [1, [150, 1300]]],
+                //['F1_BOUT', [1, [150, 1300]]],
+                ['F1_OUT', [1, [360, 820]]],
+                ['F2_IN', [2, [140, 130]]],
+                //['F2_AIN', [2, [150, 1300]]],
+                //['F2_AOUT', [2, [150, 1300]]],
+                //['F2_BIN', [2, [150, 1300]]],
+                //['F2_BOUT', [2, [150, 1300]]],
+                ['F2_OUT', [2, [360, 820]]],
+            ];
+            var locationMap = new Map(cameraPositionData);
+
+            var currentZoom = initialZoomLevel;
+            var currentFloor = floorMap[currentZoom];
+
+            var map = L.map('map', {
+                crs: L.CRS.Simple,
+                // fixed map position:
+                maxBounds: [[0, 0],[imageHeight, imageWidth]],
+                // optional: allow 25% movement on the map
+                // maxBounds: [[-maxMovementY, -maxMovementX],[imageHeight + maxMovementY, imageWidth + maxMovementX]],
+                zoomControl: false
+            }).setView([imageHeight / 2, imageWidth / 2], 0);
+
+            var carMarker = L.marker(locationMap.get(driverLocation[1])[1], {
+                icon: L.icon({
+                    iconUrl: imageResourceFolder + 'icons/red_car.png',
+                    iconSize: [40, 80],  // Adjust the size as needed
+                    iconAnchor: [20, 40],  // Adjust the anchor point as needed
+                }),
+            }).addTo(map);
+            currentFloor.addTo(map);
+
+            /* function for the action buttons sliding menu */
+            const menuToggle = document.getElementById('menuToggle');
+            const menuList = document.getElementById('menuList');
+            const welcomeTextElement = document.getElementById('welcomeText');
+
+            menuToggle.addEventListener('click', function() {
+                menuList.classList.toggle('open');
+                if (welcomeTextElement.style.display == 'none'){
+                    welcomeTextElement.style.display = 'block';
+                }
+                else {
+                    welcomeTextElement.style.display = 'none';
+                }
+            });
+
+            /* function updateWelcomeText: update the welcome text at the bottom after a saved parking space is stored */
+            function updateWelcomeText() {
+                var textBox = document.getElementById("welcomeText");
+                var defaultValue = "Welcome to Smart Parking Navigation System <br>Click the menu to the right for navigation options <br>For more inforamtion click About bellow";
+                if (localStorage.getItem('parkingSpace') == null || localStorage.getItem('parkingSpace') == 'null' || localStorage.getItem('parkingSpace') == ''){
+                    textBox.innerHTML = defaultValue;
+                }
+                else {
+                    var storedParkingSpot = localStorage.getItem('parkingSpace');
+                    var withCookiesText = "Welcome to Smart Parking Navigation System <br>You are parked at: {value from cookies} <br>Click the menu to the right for navigation options <br>For more inforamtion click About bellow";
+                    var updatedValue = withCookiesText.replace("{value from cookies}", storedParkingSpot);
+                    textBox.innerHTML = updatedValue;
+                }   
+            }
+
+            /* function updateOccupancyData: use Azure data to update occupancy monitor data on the map */
+            function updateOccupancyData(){
+                try{
+                    for (const [floor, occupancy] of OccupancyMap.entries()) {
+                        document.getElementById("occupancyFloor" + floor).innerHTML = "Occupancy: " + occupancy;
+                    }
+                } catch (error) {
+                    console.log("There was an error updating occupancyFloor", error);
+                }
+            }
+            
+            /* function switchFloor: control for swtiching floors
+                @parm direction - go UP or DOWN a floor
+            */
+            function switchFloor(direction) {
+                map.removeLayer(currentFloor);
+
+                if (direction === 'prev') {
+                    currentZoom = Math.max(minZoomLevel, (currentZoom - 1));
+                } else if (direction === 'next') {
+                    currentZoom = Math.min(maxZoomLevel, (currentZoom + 1));
+                }
+
+                if (driverLocation[0] != currentZoom){
+                    carMarker.remove(map);
+                }
+                else {
+                    carMarker.addTo(map);
+                }
+
+                currentFloor = floorMap[currentZoom];
+                currentFloor.addTo(map);
+            }
+
+            /* function manualSwitchFloor: control for swtiching floors
+                @parm direction - go UP or DOWN a floor
+            */
+            function manualSwitchFloor(floor) {
+                map.removeLayer(currentFloor);
+
+                currentZoom = Math.max(minZoomLevel, (floor));
+                currentZoom = Math.min(currentZoom, (floor));
+
+                if (driverLocation[0] != currentZoom){
+                    carMarker.remove(map);
+                }
+                else {
+                    carMarker.addTo(map);
+                }
+
+                currentFloor = floorMap[currentZoom];
+                currentFloor.addTo(map);
+            }
+
+            /* function moveCar: Change car position */
+            /* TODO: @parm pos should include data from azure SignalR that contains:
+                1. license plate number 
+                2. cameraID and floor (as tuple)
+            */
+            function moveCar(carPosition) {
+                carMarker.setLatLng(locationMap.get(carPosition)[1]);
+                driverLocation = [locationMap.get(carPosition)[0], carPosition];
+            }
+
+            /* Not implemented message */
+            function showNotImplementedPopup() {
+                var modal = document.getElementById('notImplementedModal');
+                modal.style.display = 'block';
+                var option1Button = document.getElementById('OKbutton');
+                
+                // YES - navigate to close low occupancy
+                option1Button.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+
+            /* ################################################### Action Buttons ################################################### */ 
+            
+            /* function findSpace: start a navigation location to find a parking space */
+            function findSpace() {
+                var modal = document.getElementById('navigationModal');
+                modal.style.display = 'block';
+                var option1Button = document.getElementById('navYes');
+                var option2Button = document.getElementById('navNo');
+                
+                // YES - navigate to close low occupancy
+                option1Button.addEventListener('click', function() {
+                    var minValue = Infinity;
+                    var minKey = "";
+                    var exitFloor = "";
+                    for (var i = 0; i < sectionOccupancyMap.length; i++) {
+                        var value = sectionOccupancyMap[i][1];
+                        if (value < minValue) {
+                            minValue = value;
+                            minKey = sectionOccupancyMap[i][0];
+                        }
+                    }
+                    var resultString = "navigating to exit location on floor " + exitFloor;
+                    modal.style.display = 'none';
+                    navigationProcess(minKey);
+                });
+
+                // NO - let user choose destination
+                option2Button.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    navigateLocation();
+                });
+            }
+
+            /* function navigateLocation: start navigation assistence to a wanted location */
+            function navigateLocation() {
+                var floorInput = prompt('Enter Parking destination:\n floor:');
+                var sectionInput = prompt('Section:').toUpperCase();
+                var navDestination = "";
+
+                // check for valid floor number and section letters
+                // exit synonymous to out
+                if (!(sectionInput == "EXIT" || sectionInput == "OUT")){
+                    navDestination = "F" + floorInput + "_" + sectionInput + "IN";
+                } else {
+                    navDestination = "F" + floorInput + "_" + sectionInput;
+                }
+
+                // TODO: bug: prompt jumps a second time on invalid entry
+                if (!locationMap.has(navDestination))
+                {
+                    var invalidModal = document.getElementById('InvalidDestination');
+                    invalidModal.style.display = 'block';
+                    var okButton = document.getElementById('InvalidDestinationOk');
+                    
+                    // YES - resume application
+                    okButton.addEventListener('click', function() {
+                        invalidModal.style.display = 'none';
+                    });
+                    modal.style.display = 'none';
+                    return;
+                }
+
+                // start navigation process
+                navigationProcess(navDestination);
+            }
+
+            /* function navigateExit: start navigation assistence to Exit */
+            function navigateExit() {
+                var exitFloor = driverLocation[0];
+                var exitlocation = "F" + exitFloor + "_OUT";
+                var resultString = "navigating to exit location on floor " + exitFloor;
+                
+                // start navigation process
+                navigationProcess(exitlocation);
+            }
+
+            /* functionProcess: start navigation assistence on the map 
+            * @param location - navigation destination
+            */
+            // TODO: create a visual navigation function with arrows on the map to the destination
+            function navigationProcess (location){
+                showNotImplementedPopup();
+            }
+
+            /* function saveSpot: save parking location */
+            // TODO: add click on map functionality
+            function saveSpot() {
+                if (localStorage.getItem('parkingSpace') == null || localStorage.getItem('parkingSpace') == 'null' || localStorage.getItem('parkingSpace') == ''){
+                    var input = prompt('Enter your parking space number:');
+                    localStorage.setItem('parkingSpace', input);
+                }
+                else {
+                    var savedParkingSpace = localStorage.getItem('parkingSpace');
+                    var input = prompt('Your parking space is at ' + savedParkingSpace + '\n To cahnge it, Enter your new parking space number:');
+                    localStorage.setItem('parkingSpace', input);
+                }
+                updateWelcomeText();
+            }
+
+            /* function ChangePlate: change number plates mistakes */
+            function ChangePlate() {
+                var modal = document.getElementById('changePlateModal');
+                modal.style.display = 'block';
+                var option1Button = document.getElementById('changePlateYes');
+                var option2Button = document.getElementById('changePlateNo');
+                
+                // YES - user wants to change number plate
+                option1Button.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    var input = prompt('Enter your vehicle number plate:');
+                    
+                    //TODO: add more valid number plate templates
+                    //prompt is activated multiple time. dont know why
+                    function checkLicensePlate(input) {
+                        // Remove any whitespace from the input
+                        var cleanedInput = input.replace(/\s/g, '');
+
+                        // Check if the cleaned input matches the license plate pattern
+                        if (/^\d{7,8}$/.test(cleanedInput)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                    if (input == null || input == "null" || input == "" || !checkLicensePlate(input)){
+                        var invalidModal = document.getElementById('InvalidPlateModal');
+                        invalidModal.style.display = 'block';
+                        var okButton = document.getElementById('InvalidPlateOk');
+                        
+                        // YES - navigate to close low occupancy
+                        okButton.addEventListener('click', function() {
+                            invalidModal.style.display = 'none';
+                        });
+                        modal.style.display = 'none';
+                        return;
+                    }
+                    numberPlate = input;
+                    
+                    /* TODO: create a new entry in azure for that vehicle
+                     create a new table in azure for vehicle number change requests
+                     when a request is entered the next camera that tries to send an update and cant find the number in the main table will check the request table
+                     if the number is in the request table, the previous number will be deleted from the main table and the new one will initiate a new main table entry and will be able to update it
+                     otherwise nothing happens.. */
+                    
+                    showNotImplementedPopup();
+                });
+
+                // NO - resume application
+                option2Button.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+
+            /* Function openAbout: application information 
+            */
+            function openAbout(){
+                var modal = document.getElementById('aboutButtonModal');
+                modal.style.display = 'block';
+                var option1Button = document.getElementById('aboutBack');
+                
+                // YES - navigate to close low occupancy
+                option1Button.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+            
+            /* ###################################################################################################################### */
+
+            /* ############################################## Auxiliary Applications Functions ############################################## */
+            // Default location set to Tel-Aviv University
+            getUserLocation();
+            var latitude = 32.11349181814668;
+            var longitude = 34.806626549452474;
+            
+            /* Get user location from device */
+            function getUserLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                    // Success handler
+                    function (position) {
+                        var latitude = position.coords.latitude;
+                        var longitude = position.coords.longitude;
+                        // Use the retrieved latitude and longitude
+                        console.log('Latitude: ', latitude);
+                        console.log('Longitude: ', longitude);
+                    },
+                    // Error handler
+                    function (error) {
+                        // error handling..
+                        console.log('Failed to retrieve user location:', error.message);
+                    }
+                    );
+                } else {
+                    console.log('Geolocation is not supported by this browser.');
+                }
+            }
+
+            /* Google maps */
+            function openGoogleMaps() {
+                const googlemapsApp = 'comgooglemaps://';
+                const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                
+                // Open the app link
+                window.open(googleMapsLink, '_blank');
+
+                
+                // TODO: implement usage of application on the device
+                // Open the app on the device
+                //window.location.href = googlemapsApp;
+
+                // Fallback handler if the app is not installed
+                // window.onerror = function (message, url, line, column, error) {
+                //     // Check if the error message indicates app not installed
+                //     if (message.toLowerCase().indexOf('not installed') > -1) {
+                //         // Redirect to the fallback URL
+                //         window.open(googleMapsLink, '_blank');
+                //     }
+                // };
+            }
+            
+            /* Waze */
+            function openWaze() {
+                const WazeApp = 'comgooglemaps://';
+                const WazeLink = 'https://www.waze.com/live-map/'; //`https://www.waze.com/live-map/${latitude},${longitude}`;
+                
+                // Open the app link
+                window.open(WazeLink, '_blank');
+
+                // TODO: implement usage of application on the device
+                // Open the app on the device
+                //window.location.href = WazeApp;
+
+                // Fallback handler if the app is not installed
+                // window.onerror = function (message, url, line, column, error) {
+                //     // Check if the error message indicates app not installed
+                //     if (message.toLowerCase().indexOf('not installed') > -1) {
+                //         // Redirect to the fallback URL
+                //         window.open(WazeLink, '_blank');
+                //     }
+                // };
+            }
+
+            /* Pango as parking payment solution */
+            function openPango(){
+                const PangoApp = 'pango://';
+                const PangoLink = 'https://www.pango.co.il';
+                
+                // Open the app link
+                window.open(PangoLink, '_blank');
+
+                // TODO: implement usage of application on the device
+                // Open the app on the device
+                //window.location.href = PangoApp;
+
+                // Fallback handler if the app is not installed
+                // window.onerror = function (message, url, line, column, error) {
+                //     // Check if the error message indicates app not installed
+                //     if (message.toLowerCase().indexOf('not installed') > -1) {
+                //         // Redirect to the fallback URL
+                //         window.open(PangoLink, '_blank');
+                //     }
+                // };
+            }
+
+            /* ##################################################### Javascript END ############################################################# */
+        </script>
+    </body>
+</html>
