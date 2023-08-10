@@ -6,6 +6,7 @@ We aim to enhance the ability to navigate through a closed off, GSP disabled par
 
 ## How to use
 
+First of all, you need to attach the cameras (as many as you like) to your Raspberry Pi.
 
 ## System Overview
 The smart parking system consists of these 2 key components:
