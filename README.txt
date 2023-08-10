@@ -1,7 +1,7 @@
 IOT Project
 Smart Parking Navigation System
-Almog Arviv
-Guy Paz Ben Itzhak
+by
+Almog Arviv and Guy Paz Ben Itzhak
 
 Introduction
 This project is a POC for a smart parking navigation system targeted at closed, primarily underground, parking lots where visibility is limited, orientation is challenging and parking spaces are scarce.

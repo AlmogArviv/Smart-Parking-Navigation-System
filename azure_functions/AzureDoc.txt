@@ -1,0 +1,30 @@
+Azure Function Documantation
+Function apps deployed to the serverless azure portal for the web application functionality
+and IOT device communication of frontend and backend.
+
+Function InsertVehicleEntity: inserts a new vehicle captured in an entrance to the parking lot.
+	function URL: https://spnsfunctions.azurewebsites.net/api/InsertVehicleEntity?
+	send a request to insert an entry in the main azure table for a vehicle.
+	initial the location of the driver in the app with a signalr message.
+
+Function UpdateVehicleLocation: receives vehicle updated location from the IoT camera and then does the following:
+         1. Updates Azure tables about vehicle entity new location
+         2. Sends SignalR to the vehicle assigned URL to update its location on the web app.
+	function URL : https://spnsfunctions.azurewebsites.net/api/UpdateVehicleLocation?
+	send a request to update an entry in the main azure table of a vehicle.
+	send a signalr message to the vehicle with that number plate.
+
+Function RemoveVehicleEntity: Removes a vehicle from the parking lot occupancy table:
+         1. update user map location.
+         2. delete license plate from Azure table.
+	function URL: https://spnsfunctions.azurewebsites.net/api/RemoveVehicleEntity?
+	request a deletion of a vehicle from the main table. use for exit vehicles or 
+	dead entries (not updated for too long.
+
+Function: Query the database about parking lot occupancy.
+	function URL : https://spnsfunctions.azurewebsites.net/api/QueryOccupancy?
+	sent every interval to query occupancy of the parking lot, then sent to via
+	signalr to all communications on the web application.
+	
+Function negotiate:
+	initiate communication.

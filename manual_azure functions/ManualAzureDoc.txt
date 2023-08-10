@@ -1,0 +1,19 @@
+Manual Azure Function Documantation
+these are the http addresses of the azure functions the IOT simulated device uses for operation.
+these functions should only be used manualy for debugging and testing.
+
+insert : https://spnsfunctions.azurewebsites.net/api/InsertVehicleEntity?
+	send a request to insert an entry in the main azure table for a vehicle.
+	initial the location of the driver in the app with a signalr message.
+
+update : https://spnsfunctions.azurewebsites.net/api/UpdateVehicleLocation?
+	send a request to update an entry in the main azure table of a vehicle.
+	send a signalr message to the vehicle with that number plate.
+
+delete : https://spnsfunctions.azurewebsites.net/api/RemoveVehicleEntity?
+	request a deletion of a vehicle from the main table. use for exit vehicles or 
+	dead entries (not updated for too long.
+
+query : https://spnsfunctions.azurewebsites.net/api/queryOccupancy?
+	sent every interval to query occupancy of the parking lot, then sent to via
+	signalr to all communications on the web application.
