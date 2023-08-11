@@ -17,9 +17,9 @@ the desired places in your parking area.
 Then you need to run the smart_parking_cams.py file. Notice that the current code includes 3 cameras:
 Entrace (which is on th ground floor), Exit (which is on the second floor) and Junction (which is on the first floor).
 In order to run the code, you should run the following command:
-'''
+```
 python smart_parking_cams.py <entrance_cam> <junction_cam> <exit_cam>
-'''
+```
 You should enter the Video Capture identifier (an integer) of each camera in the corresponding order and then the code will run. Make sure that the cameras are positioned properly.
 
 In order to add/remove cameras, you should make changes in the smart_parking_cams.py. Specifically, you should add another process for each new camera and use the format of the update function with the Update URL (https://spnsfunctions.azurewebsites.net/api/UpdateVehicleLocation?) and insert inside the data dictionary parameter the correct floor (integer), the section (IN for floor entry and out for floor exit) and the res parameter (which already contains the license plate number). 
