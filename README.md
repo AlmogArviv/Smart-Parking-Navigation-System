@@ -4,9 +4,25 @@
 This project is a POC for a smart parking navigation system targeted at closed, primarily underground, parking lots where visibility is limited, orientation is challenging and parking spaces are scarce.
 We aim to enhance the ability to navigate through a closed off, GSP disabled parking lot environments by using an array of cameras to create a system that maps a driver’s position by using AI and ML to capture license plate numbers and send new locations updates through Azure services, directly to a web application in the user’s smartphone.
 
+## Prerequisites
+* A working Raspberry Pi
+* Web/Pi cameras
+* requests, multiprocessing and PIL Python modules
+
+
 ## How to use
 
-First of all, you need to attach the cameras (as many as you like) to your Raspberry Pi.
+First of all, you need to attach the cameras (as many as you like) to your Raspberry Pi and locate them according to
+the desired places in your parking area.
+Then you need to run the smart_parking_cams.py file. Notice that the current code includes 3 cameras:
+Entrace (which is on th ground floor), Exit (which is on the second floor) and Junction (which is on the first floor).
+In order to run the code, you should run the following command:
+'''
+python smart_parking_cams.py <entrance_cam> <junction_cam> <exit_cam>
+'''
+You should enter the Video Capture identifier (an integer) of each camera in the corresponding order and then the code will run. Make sure that the cameras are positioned properly.
+
+In order to add/remove cameras, you should make changes in the smart_parking_cams.py. Specifically, you should add another process for each new camera and use the format of the update function with the Update URL (https://spnsfunctions.azurewebsites.net/api/UpdateVehicleLocation?) and insert inside the data dictionary parameter the correct floor (integer), the section (IN for floor entry and out for floor exit) and the res parameter (which already contains the license plate number). 
 
 ## System Overview
 The smart parking system consists of these 2 key components:
