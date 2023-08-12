@@ -423,11 +423,19 @@
                 
                 // Driver Location Update
                 connection.on('UpdateMap', (message) => {
+                    //console.log("message:", message);
+                    var receivedLicensePlate = message.Item1;
+                    var mapUpdateValue = message.Item2;
+                    //console.log("message license:", receivedLicensePlate);
+                    //console.log("message position:", mapUpdateValue);
                     try {
-                        var carPosition = message;
-                        moveCar(carPosition);
-                        manualSwitchFloor(driverLocation[0]);
-                        // TODO: update floor showing according to update
+                        if(receivedLicensePlate == numberPlate)
+                        {
+                            var carPosition = mapUpdateValue;
+                            moveCar(carPosition);
+                            manualSwitchFloor(driverLocation[0]);
+                            // TODO: update floor showing according to update
+                        }
                     } catch (error) {
                         console.error(`Unable to parse ${message}`);
                     }
@@ -470,6 +478,14 @@
             
             // number plate
             var numberPlate = '00000000';
+ 
+            // Get the licenseplate parameter from the url
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('licenseplate')) {
+                var licenseplateValue = urlParams.get('licenseplate');
+                numberPlate = licenseplateValue;
+            }
+
             var licensePlateButton = document.getElementById('button7');
             var existingText = licensePlateButton.textContent;
             licensePlateButton.innerHTML = existingText + ' <br> ' + numberPlate;
