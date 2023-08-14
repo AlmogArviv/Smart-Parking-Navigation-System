@@ -13,12 +13,12 @@ We aim to enhance the ability to navigate through a closed off, GSP disabled par
 ## How to use
 
 First of all, you need to attach the cameras (as many as you like) to your Raspberry Pi and locate them according to
-the desired places in your parking area.__
-Then you need to make a small adaption to the smart_parking_cams.py file. You should create a QR code to enable a swift log in to the WiFi network. You may do so using the following link: https://www.qr-code-generator.com/solutions/wifi-qr-code/.__
-Notice that the current code supports up to 6 cameras: and entrance camera and an exit camera for eah floor.__
-You may initialize any number of cameras (starting from a single camera). By default, we edited the code in the following way:__
+the desired places in your parking area.  
+Then you need to make a small adaption to the smart_parking_cams.py file. You should create a QR code to enable a swift log in to the WiFi network. You may do so using the following link: https://www.qr-code-generator.com/solutions/wifi-qr-code/.  
+Notice that the current code supports up to 6 cameras: and entrance camera and an exit camera for eah floor.  
+You may initialize any number of cameras (starting from a single camera). By default, we edited the code in the following way:  
 When choosing a single camera, this camera will be the parking entrance camera (on the ground floor). When choosing 2 cameras, the entrance camera to the first floor will join. The same principle follows with 3 (parking exit joins), 4 (ground floor exit), 5 (first floor exit) and 6 (second floor entrance).
-You may edit the code to change this default order of cameras.__
+You may edit the code to change this default order of cameras.  
 In order to run the code, you should run the following command:
 ```
 python smart_parking_cams.py <cameras_number> <parking_entrance_cam> <first_floor_entrance_cam> <parking_exit_cam> <ground_floor_exit_cam> <first_floor_exit_cam> <second_floor_entrance_cam>
@@ -29,35 +29,35 @@ You should enter the Video Capture identifier (an integer) of each camera in the
 The smart parking system consists of these 2 key components:
 
 ### IOT Module
-Includes Camera sensors positioned strategically within the parking lot to capture license plate information and monitor vehicle location.
-Entrance camera at are positioned at the front gates, Exit cameras at the Exit points and optional entry and exit point locations for update cameras are located throughout the parking lot sections.
-WiFi login QR and a unique application QR code are rendered at the front gates for every vehicle.
-Occupancy data, Azure database communication and updates are sent by the device.
+Includes Camera sensors positioned strategically within the parking lot to capture license plate information and monitor vehicle location.  
+Entrance camera at are positioned at the front gates, Exit cameras at the Exit points and optional entry and exit point locations for update cameras are located throughout the parking lot sections.  
+WiFi login QR and a unique application QR code are rendered at the front gates for every vehicle.  
+Occupancy data, Azure database communication and updates are sent by the device.  
 
 ### Azure Web Application
-It includes a pre-rendered customized map of the parking lot on the navigation screen.
-There are menu actions for automatic and custom navigation, updates and information, save location options.
-In addition, auxiliary apps options are provided for outdoor vehicle navigation and payment solutions.
+It includes a pre-rendered customized map of the parking lot on the navigation screen.  
+There are menu actions for automatic and custom navigation, updates and information, save location options.  
+In addition, auxiliary apps options are provided for outdoor vehicle navigation and payment solutions.  
 
 ## Flow - Initialization:
-A parking lot map is created using the blueprints of the structure.
-A development team is assigned with integrating IOT devices and cameras throughout the parking lot, while maintaining data of each capture point as coordinates for the map.
-Entry, Exit, and Update points are assigned and other specific instances of the parking lot are mapped.
-A web application is created on the Azure Platform that will run on Azure’s services.
-Authorization for administrative actions and data accessibility are assigned to the parking lot personnel.
+A parking lot map is created using the blueprints of the structure.  
+A development team is assigned with integrating IOT devices and cameras throughout the parking lot, while maintaining data of each capture point as coordinates for the map.  
+Entry, Exit, and Update points are assigned and other specific instances of the parking lot are mapped.  
+A web application is created on the Azure Platform that will run on Azure’s services.  
+Authorization for administrative actions and data accessibility are assigned to the parking lot personnel.  
 
 ## Flow - Communication:
-The camera picks up a license plate at one of the entry points (entry, exit, section).
-The IOT device uses the number captured to create a QR for that number while Azure creates a unique URL that this QR code will be directed to.
-The IOT device then renders 2 QR code on the entry point device’s screen. The first one is for logging into the parking's WiFi network and the second is for entering the web application.
-The driver will use the smartphone’s camera to capture both QR codes, log into the WiFi network and enter the web application.
-Everytime the driver runs into a camera inside the parking lot the camera will capture the number plate and the IOT device will activate a function on Azure according to the camera’s role.
-Azure will update its tables and will send a SignalR to the necessary URL addresses that has this driver's plate number.
-The map in the web application will update according to the new SignalR message.
-When the driver exits the parking lot through one of the exit points, the IOT device will send a removal function call to Azure which will update its tables and remove this vehicle from them as well. 
+The camera picks up a license plate at one of the entry points (entry, exit, section).  
+The IOT device uses the number captured to create a QR for that number while Azure creates a unique URL that this QR code will be directed to.  
+The IOT device then renders 2 QR code on the entry point device’s screen. The first one is for logging into the parking's WiFi network and the second is for entering the web application.  
+The driver will use the smartphone’s camera to capture both QR codes, log into the WiFi network and enter the web application.  
+Everytime the driver runs into a camera inside the parking lot the camera will capture the number plate and the IOT device will activate a function on Azure according to the camera’s role.  
+Azure will update its tables and will send a SignalR to the necessary URL addresses that has this driver's plate number.  
+The map in the web application will update according to the new SignalR message.  
+When the driver exits the parking lot through one of the exit points, the IOT device will send a removal function call to Azure which will update its tables and remove this vehicle from them as well.  
 
 ## IOT Device
-The IOT device is a Raspberry Pi that is attached to several cameras.
+The IOT device is a Raspberry Pi that is attached to several cameras.  
 In order to detect the license plate number, we have written a code that uses an OCR (Optical Character Recognition) tool called Tesseract. The code reduces noise in the image and converts it to grayscale. It then performs edge detection, finds contours and looks for contours that have 4 corners. It then uses Tesseract to detect the number.
 The IOT device runs a Python program which initiates the cameras and runs in parallel the license plate detection algorithm for each frame received by the cameras. It then sends an appropriate http request to Azure Functions. For the entrance camera, the IOT device also presents a QR code enabling the user to connect to the application and a WiFi connection option. Another http request is sent every minute to Azure to query the occupancy, independent of the parallel cameras requests. 
 
