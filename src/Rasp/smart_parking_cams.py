@@ -40,28 +40,28 @@ def main():
         processes.append(first_floor_entrance_process)
 
     if cams_num>2:
-        parking_exit_cam = int(sys.argv[3])
+        parking_exit_cam = int(sys.argv[4])
         parking_exit_queue = multiprocessing.Queue()
         parking_exit_process = multiprocessing.Process(target=run_cam,args=(\
         parking_exit_cam,parking_exit_queue,))
         processes.append(parking_exit_process)
 
     if cams_num>3:
-        ground_floor_exit_cam = int(sys.argv[3])
+        ground_floor_exit_cam = int(sys.argv[5])
         ground_floor_exit_queue = multiprocessing.Queue()
         ground_floor_exit_process = multiprocessing.Process(target=run_cam,args=(\
         ground_floor_exit_cam,ground_floor_exit_queue,))
         processes.append(ground_floor_exit_process)
 
     if cams_num>4:
-        first_floor_exit_cam = int(sys.argv[3])
+        first_floor_exit_cam = int(sys.argv[6])
         first_floor_exit_queue = multiprocessing.Queue()
         first_floor_exit_process = multiprocessing.Process(target=run_cam,args=(\
         first_floor_exit_cam,first_floor_exit_queue,))
         processes.append(first_floor_exit_process)
 
     if cams_num>5:
-        second_floor_entrance_cam = int(sys.argv[3])
+        second_floor_entrance_cam = int(sys.argv[7])
         second_floor_entrance_queue = multiprocessing.Queue()
         second_floor_entrance_process = multiprocessing.Process(target=run_cam,args=(\
         second_floor_entrance_cam,second_floor_entrance_queue,))
