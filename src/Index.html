@@ -58,7 +58,7 @@
 			text-align: center;
 			white-space: normal;
 			line-height: 1.4;
-			font-size: 45px;
+			font-size: 28px;
 			border-radius: 8px;
 			border: 4px solid #5c5a5a;
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -129,6 +129,7 @@
 		/* ####################   Action Buttons   ###################### */
 		.menu-container {
 			position: relative;
+            bottom: auto;
             margin-top: 1%;
             padding: 1%;
 			width: 98%;
@@ -367,7 +368,7 @@
             </div>
 
             <!-- welcome text -->
-            <div class="text-box" style= "font-size: 35px;" id="welcomeText">welcome</div>
+            <div class="text-box" id="welcomeText">welcome</div>
             
             <!-- about button -->
             <div id="aboutButton">
@@ -423,11 +424,19 @@
                 
                 // Driver Location Update
                 connection.on('UpdateMap', (message) => {
+                    //console.log("message:", message);
+                    var receivedLicensePlate = message.Item1;
+                    var mapUpdateValue = message.Item2;
+                    //console.log("message license:", receivedLicensePlate);
+                    //console.log("message position:", mapUpdateValue);
                     try {
-                        var carPosition = message;
-                        moveCar(carPosition);
-                        manualSwitchFloor(driverLocation[0]);
-                        // TODO: update floor showing according to update
+                        if(receivedLicensePlate == numberPlate)
+                        {
+                            var carPosition = mapUpdateValue;
+                            moveCar(carPosition);
+                            manualSwitchFloor(driverLocation[0]);
+                            // TODO: update floor showing according to update
+                        }
                     } catch (error) {
                         console.error(`Unable to parse ${message}`);
                     }
@@ -470,6 +479,14 @@
             
             // number plate
             var numberPlate = '00000000';
+ 
+            // Get the licenseplate parameter from the url
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('licenseplate')) {
+                var licenseplateValue = urlParams.get('licenseplate');
+                numberPlate = licenseplateValue;
+            }
+
             var licensePlateButton = document.getElementById('button7');
             var existingText = licensePlateButton.textContent;
             licensePlateButton.innerHTML = existingText + ' <br> ' + numberPlate;
@@ -553,9 +570,18 @@
             const menuToggle = document.getElementById('menuToggle');
             const menuList = document.getElementById('menuList');
             const welcomeTextElement = document.getElementById('welcomeText');
+            const menuContainer = document.getElementById('menuContainer');
 
             menuToggle.addEventListener('click', function() {
                 menuList.classList.toggle('open');
+                if (menuContainer.style.position == 'fixed'){
+                    menuContainer.style.position = 'relative';
+                    menuContainer.style.bottom = 'auto';
+                }
+                else {
+                    menuContainer.style.position = 'fixed';
+                    menuContainer.style.bottom = '0%';
+                }
                 if (welcomeTextElement.style.display == 'none'){
                     welcomeTextElement.style.display = 'block';
                 }
