@@ -68,23 +68,6 @@ def main():
         processes.append(second_floor_entrance_process)
 
     print("initialize queues")
-    #initialize queues
-    entrance_queue = multiprocessing.Queue()
-    junction_queue = multiprocessing.Queue()
-    #exit_queue = multiprocessing.Queue()
-
-    #print("initialize processes")
-    #processes = []
-    #initialize processes
-    #entrance_process = multiprocessing.Process(target=run_cam,args=(entrance_cam\
-    #,entrance_queue,))
-    #processes.append(entrance_process)
-    #junction_process = multiprocessing.Process(target=run_cam,args=(junction_cam\
-    #,junction_queue,))
-    #processes.append(junction_process)
-    #exit_process = multiprocessing.Process(target=run_cam,args=(exit_cam\
-    #,exit_queue,))
-    #processes = [entrance_process, junction_process, exit_process]
 
     process_started = [False for i in range(cams_num)]
 
@@ -95,7 +78,6 @@ def main():
     while True:
         for index, process in enumerate(processes):
             print("examining process")
-            #print(processes)
             if not process.is_alive() and not process_started[index]:
                 process.start()
                 process_started[index]=True
@@ -114,21 +96,20 @@ def main():
                         print("request was successful")
                     else:
                         print("request failed with status code: "+str(response.status_code))
-                    #TODO: For demo keep it without the license args
                     #show wifi qr
                     #give instruction to scan wifi
                     img = Image.open(first_instruct_path)
                     img.show()
-                    sleep(4)
+                    time.sleep(4)
                     #show wifi qr
                     img = Image.open(wifi_path)
                     img.show()
                     #short break to scn the code and connect to the network
-                    sleep(10)
+                    time.sleep(10)
                     #give instruction to scan app qr
                     img = Image.open(second_instruct_path)
                     img.show()
-                    sleep(4)
+                    time.sleep(4)
                     #show web qr
                     license_args = str("?licenseplate="+str(res))
                     img_path = createUniqueUrl(license_args)
@@ -213,18 +194,11 @@ def main():
                 elif index==5:
                     new_process = multiprocessing.Process(target=run_cam, args = (\
                     second_floor_entrance_cam,second_floor_entrance_queue,))
-                #if process==qr_process:
-                 #   qr_process = new_process
-                #if process==remove_process:
-                 #   remove_process = new_process
 
 
                 processes[index] = new_process
                 new_process.start()
-                #process_started[index] = False
                 print("on our way to reinitialize the process")
-                #process.remove(process)
-                #process.append(new_process)
 
         time.sleep(1)
 
