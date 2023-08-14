@@ -89,7 +89,7 @@ namespace SPNS_Functions
             {
                 // UserId = LicensePlate, // Or replace with the appropriate user ID
                 Target = "UpdateMap",
-                Arguments = new object[] { mapUpdateValue }
+                Arguments = new object[] { (LicensePlate, mapUpdateValue).ToTuple() }
             });
 
             log.LogInformation("SignalR message sent to update map for License Plate: {LicensePlate}", LicensePlate);
@@ -194,8 +194,8 @@ namespace SPNS_Functions
             {
                 // UserId = LicensePlate, // Or replace with the appropriate user ID
                 Target = "UpdateMap",
-                Arguments = new object[] { LicensePlate, mapUpdateValue }
-            });
+                Arguments = new object[] { (LicensePlate, mapUpdateValue).ToTuple() }
+            }); ;
 
             log.LogInformation("SignalR message sent to update map for License Plate: {LicensePlate}", LicensePlate);
 
