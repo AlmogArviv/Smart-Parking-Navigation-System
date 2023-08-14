@@ -14,7 +14,7 @@ We aim to enhance the ability to navigate through a closed off, GSP disabled par
 
 First of all, you need to attach the cameras (as many as you like) to your Raspberry Pi and locate them according to
 the desired places in your parking area.  
-Then you need to make a small adaption to the smart_parking_cams.py file. You should create a QR code to enable a swift log in to the WiFi network. You may do so using the following link: https://www.qr-code-generator.com/solutions/wifi-qr-code/.  
+Then you need to make a small adaption to the smart_parking_cams.py file which is on the src/Rasp directory. You should create a QR code to enable a swift log in to the WiFi network. You may do so using the following link: https://www.qr-code-generator.com/solutions/wifi-qr-code/.  
 Notice that the current code supports up to 6 cameras: and entrance camera and an exit camera for eah floor.  
 You may initialize any number of cameras (starting from a single camera). By default, we edited the code in the following way:  
 When choosing a single camera, this camera will be the parking entrance camera (on the ground floor). When choosing 2 cameras, the entrance camera to the first floor will join. The same principle follows with 3 (parking exit joins), 4 (ground floor exit), 5 (first floor exit) and 6 (second floor entrance).
